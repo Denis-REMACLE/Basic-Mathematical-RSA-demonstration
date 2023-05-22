@@ -69,6 +69,7 @@ def main():
     # add the arguments
     parser.add_argument("-p", "--pvalue", help="Value for P", default=13, type=int)
     parser.add_argument("-q", "--qvalue", help="Value for Q", default=17, type=int)
+    parser.add_argument("-s", "--string", help="String to use for the demo", default="hello", type=str)
 
     # and then parse them
     args = parser.parse_args()
@@ -97,8 +98,8 @@ def main():
     print(f"The private key is composed of the factorisation of the primes number and the secret exponent.\n{private_key}\n")
     print(f"The public key is composed of the factorisation of the primes number and the modular inverse.\n{public_key}\n")
 
-    print("Let's imagine Bob wants to say hello to Alice, he'll use Alice's public key to cipher the letter array  \"hello\".")
-    ciphertext = cipher("hello", public_key)
+    print(f"Let's imagine Bob wants to say hello to Alice, he'll use Alice's public key to cipher the letter array  \"{args.string}\".")
+    ciphertext = cipher(args.string, public_key)
     print(f"The ciphertext is {ciphertext}\n")
 
     print("Alice wants to decipher the text sent by Bob so she uses her private key")

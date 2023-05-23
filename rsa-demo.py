@@ -5,7 +5,38 @@
 # !!! This is not a viable RSA implementation !!!
 
 import argparse
+import os
 from math import sqrt, gcd
+#from qiskit import IBMQ
+#from qiskit.utils import QuantumInstance
+#from qiskit.algorithms import Shor
+
+#def shor(n):
+#    # Enter your API token here
+#    IBMQ.enable_account(os.getenv('API_TOKEN_IBM')) 
+#    provider = IBMQ.get_provider(hub='ibm-q')
+#
+#    # Specifies the quantum device
+#    backend = provider.get_backend('ibmq_qasm_simulator')
+#    factors = Shor(n)
+#
+#    result_dict = factors.run(QuantumInstance(
+#        backend, shots=1, skip_qobj_validation=False))
+#
+#    # Get factors from results
+#    result = result_dict['factors']
+#
+#    print(result)
+#    return results
+
+def break_key(number):
+    primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+
+    for p in primes:
+        factor = number % p
+        if factor == 0:
+            q = number // p
+            return p, q
 
 def check_if_prime(number):
     flag = 0
@@ -69,7 +100,11 @@ def main():
     # add the arguments
     parser.add_argument("-p", "--pvalue", help="Value for P", default=13, type=int)
     parser.add_argument("-q", "--qvalue", help="Value for Q", default=17, type=int)
-    parser.add_argument("-s", "--string", help="String to use for the demo", default="hello", type=str)
+    parser.add_argument("-m", "--msg", help="String to use for the demo", default="hello", type=str)
+    parser.add_argument("-d", "--decipher", help="String to decipher using the generated key", nargs='+', type=int)
+    parser.add_argument("-c", "--cipher", help="String to cipher using the generated key", default="", type=str)
+    parser.add_argument("-s", "--shor", help="Use shor's algorithm to break the key", type=int)
+    parser.add_argument("-b", "--break_key", help="Use bruteforce to break the key", type=int)
 
     # and then parse them
     args = parser.parse_args()
@@ -98,13 +133,30 @@ def main():
     print(f"The private key is composed of the factorisation of the primes number and the secret exponent.\n{private_key}\n")
     print(f"The public key is composed of the factorisation of the primes number and the modular inverse.\n{public_key}\n")
 
-    print(f"Let's imagine Bob wants to say hello to Alice, he'll use Alice's public key to cipher the letter array  \"{args.string}\".")
-    ciphertext = cipher(args.string, public_key)
+    print(f"Let's imagine Bob wants to say hello to Alice, he'll use Alice's public key to cipher the letter array  \"{args.msg}\".")
+    ciphertext = cipher(args.msg, public_key)
     print(f"The ciphertext is {ciphertext}\n")
 
     print("Alice wants to decipher the text sent by Bob so she uses her private key")
     cleartext = decipher(ciphertext, private_key)
     print(f"The cleartext is {cleartext}\n")
+
+    if args.decipher:
+        print("You wanted to decipher a string.")
+        cleartext = decipher(args.decipher, private_key)
+        print(f"The cleartext is {cleartext}\n")
+
+    if args.cipher:
+        print("You wanted to cipher a string.")
+        ciphertext = cipher(args.cipher, public_key)
+        print(f"The ciphertext is {ciphertext}\n")
+
+    if args.shor:
+        shor(args.shor)
+    if args.break_key:
+        p, q = break_key(args.break_key)
+        print(f"The factors are {p} and {q}")
+
 
 if __name__ == "__main__":
     main()
